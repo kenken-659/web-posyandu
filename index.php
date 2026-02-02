@@ -16,7 +16,7 @@
             background: linear-gradient(135deg, #0d6efd 0%, #0046af 100%);
             color: white;
             padding: 100px 0;
-            border-bottom-left-radius: 50px;
+            border-bottom-left-radius: 50px;    
             border-bottom-right-radius: 50px;
         }
 
