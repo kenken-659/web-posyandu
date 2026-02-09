@@ -3,14 +3,14 @@ session_start();
 include 'config/app.php';
 
 if(isset($_POST['login'])){
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $username = mysqli_real_escape_string($db, $_POST['username']);
+    $password = mysqli_real_escape_string($db, $_POST['password']);
 
     if(empty($username) || empty($password)){
         $error = "Username dan Password tidak boleh kosong";
     } else {
         // Cek apakah username terdaftar
-        $query = mysqli_query($conn, "SELECT * FROM user WHERE username='$username'");
+        $query = mysqli_query($db, "SELECT * FROM user WHERE username='$username'");
         
         if(mysqli_num_rows($query) == 0){
             $error = "Username atau Password salah";

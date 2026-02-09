@@ -22,9 +22,9 @@ if (isset($_POST['kirim'])) {
 // fungsi tampilkan jadwal kegiatan
 
 $sql = "SELECT * FROM jadwal";
-$result = mysqli_query($conn, $sql);
+$result = mysqli_query($db, $sql);
 if (!$result) {
-    die("Query Gagal: " . mysqli_error($conn));
+    die("Query Gagal: " . mysqli_error($db));
 }
 ?>
 
@@ -53,8 +53,9 @@ if (!$result) {
                 <ul class="navbar-nav ms-auto fw-medium">
                     <li class="nav-item"><a class="nav-link" href="#">Beranda</a></li>
                     <?php if($_SESSION['role']=='Kader Posyandu'): ?>
-                    <li class="nav-item"><a class="nav-link" href="#data">Data Pasien</a></li>
                     <li class="nav-item"><a class="nav-link" href="#layanan">Layanan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#data">Data Pasien</a></li>
+
                     <?php endif; ?>
                     <li class="nav-item"><a class="nav-link" href="#jadwal">Jadwal</a></li>
 
@@ -90,7 +91,7 @@ if (!$result) {
                         <?php
                         $patientCount = 0;
                         $query = "SELECT COUNT(*) AS total FROM pendaftaran";
-                        $result = mysqli_query($conn, $query);
+                        $result = mysqli_query($db, $query);
                         if ($result) {
                             $row = mysqli_fetch_assoc($result);
                             $patientCount = $row['total'];
@@ -113,7 +114,7 @@ if (!$result) {
                         <?php
                         $kaderCount = 0;
                         $query = "SELECT COUNT(*) AS total FROM user WHERE role = 'Kader Posyandu'";
-                        $result = mysqli_query($conn, $query);
+                        $result = mysqli_query($db, $query);
                         if ($result) {
                             $row = mysqli_fetch_assoc($result);
                             $kaderCount = $row['total'];
@@ -132,7 +133,7 @@ if (!$result) {
         <div class="text-center mb-5">
             <h2 class="fw-bold section-title">Layanan Utama</h2>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             <div class="col-md-4">
                 <div class="card h-100 card-layanan shadow-sm p-4 text-center border-top-primary" style="border-top: 5px solid #0d6efd;">
                     <i class="fas fa-baby text-primary fs-1 mb-3"></i>
@@ -147,6 +148,50 @@ if (!$result) {
                     <p class="text-muted small">Pemberian Makanan Tambahan dan konsultasi gizi bagi ibu hamil dan anak stunting.</p>
                 </div>
             </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+     <?php if($_SESSION['role']=='Kader Posyandu'): ?>
+    <section id="data" class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold section-title">Data Pasien</h2>
+        </div>
+        <div class="table-responsive table-custom">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Nama Pasien</th>
+                        <th>Usia</th>
+                        <th>Kalangan</th>
+                        <th>Terakhir Konsultasi</th>
+                        <th>Status Gizi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Alya Putri</td>
+                        <td>18 Bulan</td>
+                        <td>Balita</td>
+                        <td>20 Jan 2026</td>
+                        <td><span class="badge bg-success">Sehat</span></td>
+                    </tr>
+                    <tr>
+                        <td>Bima Santoso</td>
+                        <td>24 Tahun</td>
+                        <td>Dewasa</td>
+                        <td>15 Jan 2026</td>
+                        <td><span class="badge bg-warning text-dark">Perlu Pantauan</span></td>
+                    </tr>
+                    <tr>
+                        <td>Citra Lestari</td>
+                        <td>60 Tahun</td>
+                        <td>Lansia</td>
+                        <td>10 Jan 2026</td>
+                        <td><span class="badge bg-danger">Stunting</span></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </section>
     <?php endif; ?>
@@ -184,50 +229,6 @@ if (!$result) {
             </div>
         </div>
     </section>
-
-    <?php if($_SESSION['role']=='Kader Posyandu'): ?>
-    <section id="data" class="container py-5">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold section-title">Data Pasien</h2>
-        </div>
-        <div class="table-responsive table-custom">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Nama Pasien</th>
-                        <th>Usia</th>
-                        <th>Kalangan</th>
-                        <th>Terakhir Timbang</th>
-                        <th>Status Gizi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Alya Putri</td>
-                        <td>18 Bulan</td>
-                        <td>Balita</td>
-                        <td>20 Jan 2026</td>
-                        <td><span class="badge bg-success">Sehat</span></td>
-                    </tr>
-                    <tr>
-                        <td>Bima Santoso</td>
-                        <td>24 Tahun</td>
-                        <td>Dewasa</td>
-                        <td>15 Jan 2026</td>
-                        <td><span class="badge bg-warning text-dark">Perlu Pantauan</span></td>
-                    </tr>
-                    <tr>
-                        <td>Citra Lestari</td>
-                        <td>60 Tahun</td>
-                        <td>Lansia</td>
-                        <td>10 Jan 2026</td>
-                        <td><span class="badge bg-danger">Stunting</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-    <?php endif; ?>
 
     <section id="kontak" class="container py-5">
         <form action="" method="POST">
