@@ -1,0 +1,289 @@
+/* ==========================================================================
+   BAGIAN 1: GLOBAL & DASHBOARD STYLE
+   (Digunakan agar halaman Dashboard/Beranda tetap rapi)
+   ========================================================================== */
+
+/* Reset Dasar */
+* {
+    box-sizing: border-box; 
+}
+
+body { 
+    font-family: 'Poppins', sans-serif; 
+    color: #333; 
+    background-color: #f3f4f6; /* Warna dasar abu-abu muda */
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden; /* Mencegah scroll samping */
+}
+
+/* --- CONTAINER STANDAR (Untuk Dashboard) --- */
+/* PENTING: Class ini jangan diubah jadi flex/center agar dashboard tidak rusak */
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    display: block; 
+}
+
+/* Responsif ukuran container (mirip Bootstrap) */
+@media (min-width: 576px) { .container { max-width: 540px; } }
+@media (min-width: 768px) { .container { max-width: 720px; } }
+@media (min-width: 992px) { .container { max-width: 960px; } }
+@media (min-width: 1200px) { .container { max-width: 1140px; } }
+
+/* --- Komponen Dashboard Lainnya --- */
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #0046af 100%);
+    color: white;
+    padding: 100px 0;
+    border-bottom-left-radius: 50px;    
+    border-bottom-right-radius: 50px;
+}
+
+.card-layanan {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 20px;
+}
+.card-layanan:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+}
+
+.section-title {
+    position: relative;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background-color: #0d6efd;
+    border-radius: 2px;
+}
+
+.table-custom {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+
+/* ==========================================================================
+   BAGIAN 2: LOGIN & REGISTER STYLE
+   (Khusus tampilan Login Modern)
+   ========================================================================== */
+
+/* Wrapper Khusus Login (PENGGANTI .container LAMA) */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    z-index: 1; 
+}
+
+/* Footer Biru Melengkung (Background Bawah) */
+.footer-blue {
+    background-color: #0d6efd;
+    height: 350px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 0; /* Di belakang konten */
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+}
+
+/* Header Biru (Background Atas - Opsional jika ingin ganti style) */
+.header-blue {
+    background-color: #1e69de;
+    height: 300px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+}
+
+/* Kartu Login */
+.login-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 50px 40px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    margin-top: 0;
+}
+
+/* Judul & Teks */
+.login-card h1 {
+    color: #1e69de;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.subtitle {
+    color: #333;
+    font-size: 16px;
+    margin-bottom: 40px;
+    font-weight: 500;
+}
+
+/* Style Judul dengan Logo Inline (POSYANDU [Logo] KITA) */
+.title-with-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.title-with-logo span {
+    color: #1e69de;
+    font-size: 28px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.logo-inline {
+    width: 50px;
+    height: 50px;
+    background-image: url('layout/image/logo.jpg'); /* Pastikan path gambar benar */
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    border: 3px solid #1e69de;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Ukuran gambar logo di halaman Login/Register */
+.logo img,
+.logo-container img {
+    width: 80px;          /* Ukuran lebih kecil, ubah nilai ini jika perlu */
+    max-width: 100%;
+    height: auto;         /* Menjaga aspek rasio */
+    display: block;
+    margin: 0 auto 15px;  /* Tengah dan spasi bawah */
+}
+
+/* Form Input (Flat Design) */
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    padding-left: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: #eef2f6; /* Abu-abu muda */
+    font-size: 15px;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    background-color: #e3e8ee;
+    box-shadow: 0 0 0 3px rgba(30, 105, 222, 0.1);
+}
+
+/* Tombol Masuk */
+.login-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: #1e69de;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(30, 105, 222, 0.3);
+}
+
+.login-btn:hover {
+    background-color: #165ac4;
+    transform: translateY(-2px);
+}
+
+/* Link Register */
+.register-link {
+    margin-top: 30px;
+    color: #666;
+    font-size: 14px;
+}
+
+.register-link a {
+    color: #1e69de;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* Pesan Error */
+.error-message {
+    color: #dc2626;
+    background-color: #fee2e2;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* --- ANIMASI TRANSISI HALUS --- */
+.login-card {
+    animation: slideIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.page-exit {
+    animation: slideOut 0.5s cubic-bezier(0.4, 0.0, 0.2, 1) forwards !important;
+    pointer-events: none;
+}
+
+@keyframes slideOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-30px) scale(0.95); }
+}
