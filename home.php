@@ -7,9 +7,9 @@ if (!isset($_SESSION['login']))
 
 // fungsi pendaftaran pasien
 if (isset($_POST['kirim'])) {
-    $nama_pasien = $_POST['nama_pasien'];
-    $usia_kalangan = $_POST['usia_kalangan'];
-    $tujuan = $_POST['tujuan'];
+    $nama_pasien = mysqli_real_escape_string($db,$_POST['nama_pasien']);
+    $usia_kalangan = mysqli_real_escape_string($db,$_POST['usia_kalangan']);
+    $tujuan = mysqli_real_escape_string($db,$_POST['tujuan']);
 
     $query = "INSERT INTO pendaftaran (nama_pasien, usia_kalangan, tujuan) VALUES ('$nama_pasien', '$usia_kalangan', '$tujuan')";
     if (mysqli_query($db, $query)) {
@@ -19,12 +19,20 @@ if (isset($_POST['kirim'])) {
     }
 }
 
-// fungsi tampilkan jadwal kegiatan
+//fungsi Data Pasien
+$sql_pasien = "SELECT * FROM pasien";
+$result_pasien = mysqli_query($db, $sql_pasien);
 
-$sql = "SELECT * FROM jadwal";
-$result = mysqli_query($db, $sql);
-if (!$result) {
-    die("Query Gagal: " . mysqli_error($db));
+if(!$result_pasien){
+    die("Query Pasien Gagal: " . mysqli_error($db));
+}
+
+// fungsi tampilkan jadwal kegiatan
+$sql_jadwal = "SELECT * FROM jadwal";
+$result_jadwal = mysqli_query($db, $sql_jadwal);
+
+if (!$result_jadwal){
+    die("Query Jadwal Gagal: " . mysqli_error($db));
 }
 ?>
 
@@ -75,7 +83,6 @@ if (!$result) {
                     <h1 class="display-4 fw-bold mb-3">Generasi Sehat, Bangsa Kuat</h1>
                     <p class="lead mb-4 opacity-75">Sistem Informasi Pelayanan Kesehatan Masyarakat untuk Ibu, Anak, dan Lansia secara Terpadu.</p>
                     <div class="d-flex justify-content-center gap-3">
-                        <!--<a href="#jadwal" class="btn btn-warning btn-lg fw-bold rounded-pill px-4 shadow">Lihat Jadwal</a> -->
                         <a href="#kontak" class="btn btn-outline-light btn-lg rounded-pill px-4">Daftar Pasien</a>
                     </div>
                 </div>
@@ -128,7 +135,6 @@ if (!$result) {
         </div>
     </div>
 
-    <?php if($_SESSION['role']=='Kader Posyandu'): ?>
     <section id="layanan" class="container py-5 mt-4">
         <div class="text-center mb-5">
             <h2 class="fw-bold section-title">Layanan Utama</h2>
@@ -150,51 +156,6 @@ if (!$result) {
             </div>
         </div>
     </section>
-    <?php endif; ?>
-
-     <?php if($_SESSION['role']=='Kader Posyandu'): ?>
-    <section id="data" class="container py-5">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold section-title">Data Pasien</h2>
-        </div>
-        <div class="table-responsive table-custom">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Nama Pasien</th>
-                        <th>Usia</th>
-                        <th>Kalangan</th>
-                        <th>Terakhir Konsultasi</th>
-                        <th>Status Gizi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Alya Putri</td>
-                        <td>18 Bulan</td>
-                        <td>Balita</td>
-                        <td>20 Jan 2026</td>
-                        <td><span class="badge bg-success">Sehat</span></td>
-                    </tr>
-                    <tr>
-                        <td>Bima Santoso</td>
-                        <td>24 Tahun</td>
-                        <td>Dewasa</td>
-                        <td>15 Jan 2026</td>
-                        <td><span class="badge bg-warning text-dark">Perlu Pantauan</span></td>
-                    </tr>
-                    <tr>
-                        <td>Citra Lestari</td>
-                        <td>60 Tahun</td>
-                        <td>Lansia</td>
-                        <td>10 Jan 2026</td>
-                        <td><span class="badge bg-danger">Stunting</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-    <?php endif; ?>
 
     <section id="jadwal" class="bg-white py-5">
         <div class="container">
@@ -214,14 +175,18 @@ if (!$result) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while($row = mysqli_fetch_assoc($result)) : ?>
+                        <?php
+                        $no = 0;
+                        while($row = mysqli_fetch_assoc($result_jadwal)) : ?>
                         <tr>
                             <td><?= ++$no; ?></td>
-                            <td><?= $row['tanggal']; ?></td>
-                            <td class="fw-bold"><?= $row['kegiatan']; ?></td>
-                            <td><?= $row['lokasi']; ?></td>
-                            <td><?= $row['waktu']; ?></td>
-                            <td><?= $row['status'];?></td>
+                            <td><?= htmlspecialchars($row['tanggal']); ?></td>
+                            <td><?= htmlspecialchars($row['kegiatan']); ?></td>
+                            <td><?= htmlspecialchars($row['lokasi']); ?></td>
+                            <td><?= htmlspecialchars($row['waktu']); ?></td>
+                            <td>
+                                <span class="badge <?= $row['status'] == 'Selesai' ? 'bg-success' : 'bg-warning text-dark'; ?>"><?= htmlspecialchars($row['status']); ?></span>
+                            </td>
                         </tr>
                         <?php endwhile; ?>
                     </tbody>
@@ -229,6 +194,53 @@ if (!$result) {
             </div>
         </div>
     </section>
+
+     <?php if($_SESSION['role']=='Kader Posyandu'): ?>
+    <section id="data" class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold section-title">Data Pasien</h2>
+        </div>
+        <div class="table-responsive table-custom">
+            <div class="mb-3 d-flex justify-content-end">
+                <a href="tambah_pasien.php" class="btn btn-primary rounded-circle shadow" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Nama Pasien</th>
+                        <th>Usia & Kalangan</th>
+                        <th>Terakhir Konsultasi</th>
+                        <th>Status Kesehatan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while($row_pasien = mysqli_fetch_assoc($result_pasien)) : ?>
+                    <tr>
+                        <td><?= htmlspecialchars($row_pasien['nama_pasien']); ?></td>
+                        <td><?= htmlspecialchars($row_pasien['usia_kalangan']); ?></td>
+                        <td><?= htmlspecialchars($row_pasien['terakhir_konsultasi']); ?></td>
+                        <td>
+                            <?php $status = $row_pasien['status_kesehatan']; $badge_class = ($status == 'Sehat') ? 'bg-success' : 'bg-warning text-dark'; ?>
+                            <span class="badge <?= ($row_pasien['status_kesehatan'] == 'Sehat') ? 'bg-success' : 'bg-warning text-dark'; ?>"><?= htmlspecialchars($row_pasien['status_kesehatan']); ?></span>
+                        </td>
+                        <td>
+                            <a href="edit_pasien.php?id=<?= $row_pasien['id_pasien']; ?>" class="btn btn-warning btn-sm rounded-pill px-3">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="hapus_pasien.php?id=<?= $row_pasien['id_pasien']; ?>" class="btn btn-danger btn-sm rounded-pill px-3" onclick="return confirm('Apakah Anda yakin ingin menghapus data pasien ini?');">
+                                <i class="fas fa-trash"></i> Hapus
+                            </a>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <section id="kontak" class="container py-5">
         <form action="" method="POST">
