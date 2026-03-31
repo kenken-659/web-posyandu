@@ -27,6 +27,44 @@ if(!$result_pasien){
     die("Query Pasien Gagal: " . mysqli_error($db));
 }
 
+// fungsi tambah pasien dari MODAL
+if (isset($_POST['tambah_pasien'])) {
+    $nama_pasien = mysqli_real_escape_string($db, $_POST['nama_pasien']);
+    $usia_kalangan = mysqli_real_escape_string($db, $_POST['usia_kalangan']);
+    $tgl_konsultasi = mysqli_real_escape_string($db, $_POST['terakhir_konsultasi']);
+    $status_kesehatan = mysqli_real_escape_string($db, $_POST['status_kesehatan']);
+
+    $query = "INSERT INTO pasien (nama_pasien, usia_kalangan, terakhir_konsultasi, status_kesehatan) 
+              VALUES ('$nama_pasien', '$usia_kalangan', '$tgl_konsultasi', '$status_kesehatan')";
+    
+    if (mysqli_query($db, $query)) {
+        echo "<script>alert('Data pasien berhasil ditambahkan!'); window.location.href='index.php';</script>";
+    } else {
+        echo "<script>alert('Gagal menambah data.');</script>";
+    }
+}
+// fungsi update pasien dari MODAL
+if (isset($_POST['update_pasien'])) {
+    $id_pasien = mysqli_real_escape_string($db, $_POST['id_pasien']);
+    $nama_pasien = mysqli_real_escape_string($db, $_POST['nama_pasien']);
+    $usia_kalangan = mysqli_real_escape_string($db, $_POST['usia_kalangan']);
+    $tgl_konsultasi = mysqli_real_escape_string($db, $_POST['terakhir_konsultasi']);
+    $status_kesehatan = mysqli_real_escape_string($db, $_POST['status_kesehatan']);
+
+    $query = "UPDATE pasien SET 
+              nama_pasien = '$nama_pasien', 
+              usia_kalangan = '$usia_kalangan', 
+              terakhir_konsultasi = '$tgl_konsultasi', 
+              status_kesehatan = '$status_kesehatan' 
+              WHERE id_pasien = '$id_pasien'";
+    
+    if (mysqli_query($db, $query)) {
+        echo "<script>alert('Data pasien berhasil diperbarui!'); window.location.href='Home.php';</script>";
+    } else {
+        echo "<script>alert('Gagal memperbarui data.');</script>";
+    }
+}
+
 // fungsi tampilkan jadwal kegiatan
 $sql_jadwal = "SELECT * FROM jadwal";
 $result_jadwal = mysqli_query($db, $sql_jadwal);
@@ -60,12 +98,12 @@ if (!$result_jadwal){
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto fw-medium">
                     <li class="nav-item"><a class="nav-link" href="#">Beranda</a></li>
-                    <?php if($_SESSION['role']=='Kader Posyandu'): ?>
                     <li class="nav-item"><a class="nav-link" href="#layanan">Layanan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#data">Data Pasien</a></li>
 
-                    <?php endif; ?>
+                    <?php if($_SESSION['role']=='Kader Posyandu'): ?>
                     <li class="nav-item"><a class="nav-link" href="#jadwal">Jadwal</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#data">Data Pasien</a></li>
+                    <?php endif; ?>
 
                     <span class="nav-link" style="color: #191970;"> Halo, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                     <li class="nav-item ms-lg-3">
@@ -201,10 +239,11 @@ if (!$result_jadwal){
             <h2 class="fw-bold section-title">Data Pasien</h2>
         </div>
         <div class="table-responsive table-custom">
-            <div class="mb-3 d-flex justify-content-end">
-                <a href="tambah_pasien.php" class="btn btn-primary rounded-circle shadow" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-plus"></i>
-                </a>
+            <div class="mb-3 d-flex justify-content-end" style="position: relative; z-index: 1050;">
+                <button type="button" class="btn btn-primary rounded-circle shadow-lg" style="width: 50px; height: 50px; display: flex; align-items: center; 
+                justify-content: center; border: none;" data-bs-toggle="modal" data-bs-target="#modalTambahPasien">
+                    <i class="fas fa-plus fa-lg"></i>
+                </button>
             </div>
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-primary">
@@ -227,9 +266,17 @@ if (!$result_jadwal){
                             <span class="badge <?= ($row_pasien['status_kesehatan'] == 'Sehat') ? 'bg-success' : 'bg-warning text-dark'; ?>"><?= htmlspecialchars($row_pasien['status_kesehatan']); ?></span>
                         </td>
                         <td>
-                            <a href="edit_pasien.php?id=<?= $row_pasien['id_pasien']; ?>" class="btn btn-warning btn-sm rounded-pill px-3">
+                           <button type="button" 
+                                    class="btn btn-warning btn-sm rounded-pill px-3 btn-edit" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalEditPasien"
+                                    data-id="<?= $row_pasien['id_pasien']; ?>"
+                                    data-nama="<?= htmlspecialchars($row_pasien['nama_pasien']); ?>"
+                                    data-usia="<?= $row_pasien['usia_kalangan']; ?>"
+                                    data-tgl="<?= $row_pasien['terakhir_konsultasi']; ?>"
+                                    data-status="<?= $row_pasien['status_kesehatan']; ?>">
                                 <i class="fas fa-edit"></i> Edit
-                            </a>
+                            </button>
                             <a href="hapus_pasien.php?id=<?= $row_pasien['id_pasien']; ?>" class="btn btn-danger btn-sm rounded-pill px-3" onclick="return confirm('Apakah Anda yakin ingin menghapus data pasien ini?');">
                                 <i class="fas fa-trash"></i> Hapus
                             </a>
@@ -300,6 +347,117 @@ if (!$result_jadwal){
         </div>
     </footer>
 
+     <div class="modal fade" id="modalTambahPasien" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white p-4">
+                <h5 class="modal-title fw-bold" id="modalLabel">Tambah Data Pasien</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Pasien</label>
+                        <input type="text" name="nama_pasien" class="form-control" placeholder="Nama Lengkap" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Usia & Kalangan</label>
+                        <select name="usia_kalangan" class="form-select" required>
+                            <option value="0 - 1 tahun (Bayi)">0 - 1 tahun (Bayi)</option>
+                            <option value="1 - 3 tahun (Batita)">1 - 3 tahun (Batita)</option>
+                            <option value="3 - 5 tahun (Balita)">3 - 5 tahun (Balita)</option>
+                            <option value="5 - 9 tahun (Anak-anak)">5 - 9 tahun (Anak-anak)</option>
+                            <option value="Lansia">Lansia</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Terakhir Konsultasi</label>
+                        <input type="date" name="terakhir_konsultasi" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Status Kesehatan</label>
+                        <select name="status_kesehatan" class="form-select" required>
+                            <option value="Sehat">Sehat</option>
+                            <option value="Stunting">Stunting</option>
+                            <option value="Perlu Pantauan">Perlu Pantauan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Kembali</button>
+                    <button type="submit" name="tambah_pasien" class="btn btn-primary px-4 rounded-pill">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalEditPasien" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-warning text-dark p-4">
+                <h5 class="modal-title fw-bold">Edit Data Pasien</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="" method="POST">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="id_pasien" id="edit-id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Pasien</label>
+                        <input type="text" name="nama_pasien" id="edit-nama" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Usia & Kalangan</label>
+                        <select name="usia_kalangan" id="edit-usia" class="form-select">
+                            <option value="0 - 1 tahun (Bayi)">0 - 1 tahun (Bayi)</option>
+                            <option value="1 - 3 tahun (Batita)">1 - 3 tahun (Batita)</option>
+                            <option value="3 - 5 tahun (Balita)">3 - 5 tahun (Balita)</option>
+                            <option value="5 - 9 tahun (Anak-anak)">5 - 9 tahun (Anak-anak)</option>
+                            <option value="Lansia">Lansia</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Terakhir Konsultasi</label>
+                        <input type="date" name="terakhir_konsultasi" id="edit-tgl" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Status Kesehatan</label>
+                        <select name="status_kesehatan" id="edit-status" class="form-select">
+                            <option value="Sehat">Sehat</option>
+                            <option value="Stunting">Stunting</option>
+                            <option value="Perlu Pantauan">Perlu Pantauan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" name="update_pasien" class="btn btn-warning px-4 rounded-pill fw-bold">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.querySelectorAll('.btn-edit').forEach(button => {
+    button.onclick = function() {
+        // Ambil data dari atribut tombol yang diklik
+        const id = this.getAttribute('data-id');
+        const nama = this.getAttribute('data-nama');
+        const usia = this.getAttribute('data-usia');
+        const tgl = this.getAttribute('data-tgl');
+        const status = this.getAttribute('data-status');
+
+        // Masukkan data ke dalam input Modal Edit
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-nama').value = nama;
+        document.getElementById('edit-usia').value = usia;
+        document.getElementById('edit-tgl').value = tgl;
+        document.getElementById('edit-status').value = status;
+    }
+});
+</script>
+   
 </body>
 </html>
